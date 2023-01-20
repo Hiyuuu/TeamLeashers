@@ -1,0 +1,57 @@
+
+name: リリース公開
+
+on:
+  push:
+#     tags:
+#       - 'v*'
+    branches: [ master ]
+#   pull_request:
+#     branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: JDK8 を準備中
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: キャッシュ を準備中
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    - name: Gradlew に権限を付与
+      run: chmod +x gradlew
+    - name: Gradle Shadowjar でJarをビルドしています
+      run: ./gradlew shadowjar
+    - name: リリースタグを生成中
+      uses: amitsingh-007/next-release-tag@v1.0.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+    - name: リリースを生成中
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.release_tag }}
+        release_name: リリース ${{ env.release_tag }}
+        draft: false
+        prerelease: false
+    - name: アセットをアップロード中
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ github.event.repository.name }}.jar
+        asset_name: ${{ github.event.repository.name }}.jar
+        asset_content_type: application/zip

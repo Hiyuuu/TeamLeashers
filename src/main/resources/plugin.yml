@@ -1,0 +1,17 @@
+name: TeamLeashers
+version: 1.0
+main: TeamLeashers
+authors:
+  - HIYU1576
+api-version: 1.19
+
+commands:
+  start:
+    permission: Op
+    usage: /start
+  distance:
+    permission: Op
+    usage: /distance <動ける距離>
+  pairsize:
+    permission: Op
+    usage: /pairsize <チーム編成最大人数>

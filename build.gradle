@@ -1,0 +1,43 @@
+// プラグイン
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+// jar生成設定
+jar.manifest { attributes "Main-Class" : "StandAloneKt" }
+shadowJar {
+    archiveFileName = "../../${project.name}.jar"
+    minimize()
+}
+
+// パッケージ
+group 'com.gmail.hiyu1576'
+version '1.0'
+
+// リポジトリ
+repositories {
+    mavenCentral()
+
+    maven { url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+}
+
+// 依存関係
+dependencies {
+
+    // 同梱
+    implementation fileTree(dir: './library/implement', include: ['*.jar'])
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.22'
+
+    // 参照
+    compileOnly fileTree(dir: './library/compile', include: ['*.jar'])
+    compileOnly 'org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT'
+
+}
+
+// コンパイル設定
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+compileKotlin.kotlinOptions { jvmTarget = "1.8" }
