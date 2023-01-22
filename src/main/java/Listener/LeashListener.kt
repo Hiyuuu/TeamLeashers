@@ -90,12 +90,12 @@ class LeashListener : Listener {
                     (E as? Player)?.inventory?.setItemInOffHand(ItemStack(Material.LEAD))
                     getLeashEntity.setLeashHolder(E)
 
-                    val centerTop = center.world!!.getHighestBlockAt(center).location
-                    val loc = Location(center.world, center.x, centerTop.y, center.z)
-                    if (center.distance(loc) <= 10.0)
-                        getLeashEntity.teleport(loc.add(0.0, 0.5, 0.0))
-                    else
-                        getLeashEntity.teleport(center.clone().add(0.0, 0.0, 0.0))
+//                    val centerTop = center.world!!.getHighestBlockAt(center).location
+//                    val loc = Location(center.world, center.x, centerTop.y, center.z)
+//                    if (center.distance(loc) <= 3.0)
+//                        getLeashEntity.teleport(loc.add(0.0, 0.5, 0.0))
+//                    else
+                    getLeashEntity.teleport(center.clone().add(0.0, 0.0, 0.0))
 
                 } else {
                     val entity = (center.world!!.spawnEntity(center, EntityType.CHICKEN) as Chicken).apply {
@@ -136,8 +136,8 @@ class LeashListener : Listener {
      * 繋がれていないリード用エンティティをキル
      */
     fun killNotConnectedEntity()
-            = LeashEntity.forEach { k, v ->
-        if ((v as? Chicken ?: return@forEach)?.leashHolder != k) v.remove()
+            = LeashEntity.filter { !it.key.isDead }.forEach { k, v ->
+        if (runCatching { (v as? Chicken)?.leashHolder }.getOrNull() != k) v.remove()
     }
 
     /**
